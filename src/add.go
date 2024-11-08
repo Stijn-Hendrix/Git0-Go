@@ -6,25 +6,28 @@ import (
 	"path/filepath"
 )
 
-func addGit0() {
+func addGit0(arg string) {
 
-	/*
-		head, _ := os.ReadFile("./HEAD")
-		headStr := string(head)
+	if arg == "." {
+		addAll()
+	}
 
-		var treeBlobHash string
+	//serializeTreeBlob(head, "../../test.json")
 
-		if fileExists(headStr) {
-			treeBlob, _ := os.ReadFile(headStr)
-			treeBlobHash = string(treeBlob)
-		}
+	//	k, _ := deserializeTreeBlob("../../test.json")
+	//fmt.Printf("%s\n", k.getHash())
+}
 
-		if len(head) == 0 {
-			writeToFile("./HEAD", "TEST")
-		}
-	*/
+func addAll() {
+	head := dirToBlob(".")
 
-	dirToBlob(".")
+	oldBlob := getBranchTreeBlob()
+
+	addTreeBlob(head)
+
+	cleanBlob(oldBlob)
+
+	fmt.Printf("%s\n", head.getHash())
 }
 
 func dirToBlob(path string) *TreeBlobDir {
@@ -37,11 +40,9 @@ func dirToBlob(path string) *TreeBlobDir {
 		if item.Name() != ".git0" {
 			filePath := filepath.Join(path, item.Name())
 			if item.IsDir() {
-				fmt.Printf("Dir: %s\n", filePath)
 				currentDir.addDir(dirToBlob(filePath))
 			} else {
-				addFile(filePath)
-				fmt.Printf("File: %s\n", filePath)
+				currentDir.addFile(addFile(filePath))
 			}
 		}
 	}
@@ -55,8 +56,14 @@ func addFile(path string) *TreeBlobFile {
 
 	createIfNotExistsFolder(".git0/objects/" + hashStr[:2])
 	if createIfNotExistsFile(".git0/objects/"+hashStr[:2]+"/"+hashStr, dataStr) {
-		fmt.Printf("%s added", path)
+		fmt.Printf("%s added %s\n", path, hashStr)
 	}
 
-	return newTreeFile(path, dataStr, hashStr)
+	return newTreeFile(path, hashStr)
+}
+
+func addTreeBlob(blob *TreeBlobDir) {
+	hashStr := blob.getHash()
+	createIfNotExistsFolder(".git0/objects/" + hashStr[:2])
+	CompressAndSerialize(blob, ".git0/objects/"+hashStr[:2]+"/"+hashStr)
 }

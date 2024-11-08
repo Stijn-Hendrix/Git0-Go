@@ -1,0 +1,32 @@
+{
+  "Path": ".",
+  "TreeDirs": [
+    {
+      "Path": "src",
+      "TreeDirs": [
+        {
+          "Path": "src\\math",
+          "TreeDirs": null,
+          "TreeFiles": [
+            {
+              "Path": "src\\math\\vector.txt",
+              "Hash": "2082111029665665854"
+            }
+          ]
+        }
+      ],
+      "TreeFiles": [
+        {
+          "Path": "src\\helloWorld.txt",
+          "Hash": "13858524158368391165"
+        }
+      ]
+    }
+  ],
+  "TreeFiles": [
+    {
+      "Path": "test.json",
+      "Hash": "1301540698406687794"
+    }
+  ]
+}

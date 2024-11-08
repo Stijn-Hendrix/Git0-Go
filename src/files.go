@@ -2,15 +2,12 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 )
 
 func createFolder(path string) {
 	err := os.Mkdir(path, 0755)
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
 }
 
 func writeToFile(path string, content string) error {
@@ -25,9 +22,7 @@ func createIfNotExistsFolder(path string) {
 
 	if os.IsNotExist(err) {
 		err := os.Mkdir(path, 0755)
-		if err != nil {
-			log.Fatal(err)
-		}
+		check(err)
 	}
 }
 
