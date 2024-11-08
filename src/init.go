@@ -16,6 +16,7 @@ func initGit0() {
 	createFolder(".git0/objects")
 	createFolder(".git0/refs")
 	createFolder(".git0/refs/heads")
+	createFile(".git0/index", "")
 	createFile(".git0/HEAD", "refs/heads/"+MAIN_BRANCH)
 
 	fmt.Print("Git0 initialized.\n")

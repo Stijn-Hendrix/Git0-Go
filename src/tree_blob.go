@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/gob"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"os"
 	"sort"
@@ -12,11 +13,13 @@ import (
 
 type TreeBlobFile struct {
 	Path string
+	Name string
 	Hash string
 }
 
 type TreeBlobDir struct {
 	Path      string
+	Name      string
 	TreeDirs  []*TreeBlobDir
 	TreeFiles []*TreeBlobFile
 }
@@ -49,16 +52,18 @@ func (t *TreeBlobDir) getHash() string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-func newTreeFile(path string, hash string) *TreeBlobFile {
+func newTreeFile(path string, name string, hash string) *TreeBlobFile {
 	file := new(TreeBlobFile)
 	file.Path = path
 	file.Hash = hash
+	file.Name = name
 	return file
 }
 
-func newTreeDir(path string) *TreeBlobDir {
+func newTreeDir(path string, name string) *TreeBlobDir {
 	dir := new(TreeBlobDir)
 	dir.Path = path
+	dir.Name = name
 	return dir
 }
 
@@ -116,4 +121,45 @@ func DecompressAndDeserialize(filename string) (*TreeBlobDir, error) {
 
 func cleanBlob(blob *TreeBlobDir) {
 
+}
+
+func addTreeBlob(blob *TreeBlobDir) {
+	hashStr := blob.getHash()
+	createIfNotExistsFolder(".git0/objects/" + hashStr[:2])
+	CompressAndSerialize(blob, ".git0/objects/"+hashStr[:2]+"/"+hashStr)
+}
+
+func SerializeTreeBlob(root *TreeBlobDir, filename string) error {
+	// Open file for writing
+	file, err := os.Create(filename)
+	if err != nil {
+		return fmt.Errorf("failed to create file: %w", err)
+	}
+	defer file.Close()
+
+	// Create a JSON encoder and write the data
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ") // Pretty print with indentation
+	if err := encoder.Encode(root); err != nil {
+		return fmt.Errorf("failed to encode JSON: %w", err)
+	}
+	return nil
+}
+
+// DeserializeTreeBlob reads JSON data from a file and converts it to a TreeBlobDir structure.
+func DeserializeTreeBlob(filename string) (*TreeBlobDir, error) {
+	// Open file for reading
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open file: %w", err)
+	}
+	defer file.Close()
+
+	// Create a JSON decoder and decode the data into TreeBlobDir
+	var root TreeBlobDir
+	decoder := json.NewDecoder(file)
+	if err := decoder.Decode(&root); err != nil {
+		return nil, fmt.Errorf("failed to decode JSON: %w", err)
+	}
+	return &root, nil
 }
