@@ -56,3 +56,10 @@ func createFile(path string, content string) {
 	defer destination.Close()
 	fmt.Fprintf(destination, "%s ", content)
 }
+
+func isFile(path string) bool {
+	file, _ := os.Open(path)
+	fileInfo, _ := file.Stat()
+	defer file.Close()
+	return !fileInfo.IsDir()
+}

@@ -20,10 +20,11 @@ func createFiles(t *TreeBlobDir) {
 	for _, dir := range t.TreeDirs {
 		createFiles(dir)
 	}
-
-	for _, file := range t.TreeFiles {
-		addFile(file.Path)
-	}
+	/*
+		for _, file := range t.TreeFiles {
+			//addFile(file.Path)
+		}
+	*/
 }
 
 func addFile(path string) {

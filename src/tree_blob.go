@@ -12,13 +12,13 @@ import (
 )
 
 type TreeBlobFile struct {
-	Path string
+	//Path string
 	Name string
 	Hash string
 }
 
 type TreeBlobDir struct {
-	Path      string
+	//Path      string
 	Name      string
 	TreeDirs  []*TreeBlobDir
 	TreeFiles []*TreeBlobFile
@@ -27,42 +27,42 @@ type TreeBlobDir struct {
 func (t *TreeBlobDir) getHash() string {
 	hasher := sha256.New()
 
-	hasher.Write([]byte(t.Path))
+	hasher.Write([]byte(t.Name))
 
 	// Sort files by path to ensure consistent hashing order
 	sort.Slice(t.TreeFiles, func(i, j int) bool {
-		return t.TreeFiles[i].Path < t.TreeFiles[j].Path
+		return t.TreeFiles[i].Name < t.TreeFiles[j].Name
 	})
 
 	for _, file := range t.TreeFiles {
-		hasher.Write([]byte(file.Path))
+		hasher.Write([]byte(file.Name))
 		hasher.Write([]byte(file.Hash))
 	}
 
 	// Sort subdirectories by path to ensure consistent hashing order
 	sort.Slice(t.TreeDirs, func(i, j int) bool {
-		return t.TreeDirs[i].Path < t.TreeDirs[j].Path
+		return t.TreeDirs[i].Name < t.TreeDirs[j].Name
 	})
 
 	for _, subDir := range t.TreeDirs {
-		hasher.Write([]byte(subDir.Path))
+		hasher.Write([]byte(subDir.Name))
 		hasher.Write([]byte(subDir.getHash()))
 	}
 
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-func newTreeFile(path string, name string, hash string) *TreeBlobFile {
+func newTreeFile(name string, hash string) *TreeBlobFile {
 	file := new(TreeBlobFile)
-	file.Path = path
+	//file.Path = path
 	file.Hash = hash
 	file.Name = name
 	return file
 }
 
-func newTreeDir(path string, name string) *TreeBlobDir {
+func newTreeDir(name string) *TreeBlobDir {
 	dir := new(TreeBlobDir)
-	dir.Path = path
+	//dir.Path = path
 	dir.Name = name
 	return dir
 }
@@ -117,10 +117,6 @@ func DecompressAndDeserialize(filename string) (*TreeBlobDir, error) {
 	}
 
 	return &root, nil
-}
-
-func cleanBlob(blob *TreeBlobDir) {
-
 }
 
 func addTreeBlob(blob *TreeBlobDir) {
