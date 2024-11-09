@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"sort"
 )
@@ -119,13 +120,7 @@ func DecompressAndDeserialize(filename string) (*TreeBlobDir, error) {
 	return &root, nil
 }
 
-func addTreeBlob(blob *TreeBlobDir) {
-	hashStr := blob.getHash()
-	createIfNotExistsFolder(".git0/objects/" + hashStr[:2])
-	CompressAndSerialize(blob, ".git0/objects/"+hashStr[:2]+"/"+hashStr)
-}
-
-func SerializeTreeBlob(root *TreeBlobDir, filename string) error {
+func SerializeObject(data interface{}, filename string) error {
 	// Open file for writing
 	file, err := os.Create(filename)
 	if err != nil {
@@ -136,14 +131,13 @@ func SerializeTreeBlob(root *TreeBlobDir, filename string) error {
 	// Create a JSON encoder and write the data
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "  ") // Pretty print with indentation
-	if err := encoder.Encode(root); err != nil {
+	if err := encoder.Encode(data); err != nil {
 		return fmt.Errorf("failed to encode JSON: %w", err)
 	}
 	return nil
 }
 
-// DeserializeTreeBlob reads JSON data from a file and converts it to a TreeBlobDir structure.
-func DeserializeTreeBlob(filename string) (*TreeBlobDir, error) {
+func DeserializeObject(data interface{}, filename string) (interface{}, error) {
 	// Open file for reading
 	file, err := os.Open(filename)
 	if err != nil {
@@ -151,11 +145,33 @@ func DeserializeTreeBlob(filename string) (*TreeBlobDir, error) {
 	}
 	defer file.Close()
 
-	// Create a JSON decoder and decode the data into TreeBlobDir
-	var root TreeBlobDir
+	// Create a JSON decoder and decode the data into the provided data structure
 	decoder := json.NewDecoder(file)
-	if err := decoder.Decode(&root); err != nil {
+	if err := decoder.Decode(data); err != nil {
 		return nil, fmt.Errorf("failed to decode JSON: %w", err)
 	}
-	return &root, nil
+	return data, nil
+}
+
+// DeserializeTreeBlob reads JSON data from a file and converts it to a TreeBlobDir structure.
+func DeserializeTreeBlob(filename string) *TreeBlobDir {
+	var treeBlobDir TreeBlobDir
+	head, err := DeserializeObject(&treeBlobDir, filename)
+	if err != nil {
+		log.Fatalf("Error deserializing TreeBlobDir: %v", err)
+	}
+
+	// Cast head to *TreeBlobDir
+	return head.(*TreeBlobDir)
+}
+
+func DeserializeCommit(filename string) *Commit {
+	var commit Commit
+	head, err := DeserializeObject(&commit, filename)
+	if err != nil {
+		log.Fatalf("Error deserializing Commit: %v", err)
+	}
+
+	// Cast head to *Commit
+	return head.(*Commit)
 }

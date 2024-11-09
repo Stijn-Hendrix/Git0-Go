@@ -8,26 +8,26 @@ import (
 )
 
 func addGit0(path string) {
-
-	head, _ := DeserializeTreeBlob(".git0/index")
-
 	if path == "." {
-		SerializeTreeBlob(createDirBlob("."), ".git0/index")
-	} else {
-		if path[0] != '.' {
-			path = "." + path
-		}
-
-		fmt.Printf("%s\n", path)
-
-		if isFile(path) {
-			addFileToTree(path, head)
-		} else {
-			addDirToTree(path, head)
-		}
-
-		SerializeTreeBlob(head, ".git0/index")
+		SerializeObject(createDirBlob("."), ".git0/index")
+		return
 	}
+
+	head := DeserializeTreeBlob(".git0/index")
+
+	if path[0] != '.' {
+		path = "." + path
+	}
+
+	fmt.Printf("%s\n", path)
+
+	if isFile(path) {
+		addFileToTree(path, head)
+	} else {
+		addDirToTree(path, head)
+	}
+
+	SerializeObject(head, ".git0/index")
 }
 
 func findOrCreateDir(t *TreeBlobDir, dirName string) *TreeBlobDir {
@@ -49,7 +49,7 @@ func addDirToTree(path string, t *TreeBlobDir) {
 
 	// Split file path into directory components
 	dirs := strings.Split(filepath.Dir(path), string(os.PathSeparator))
-
+	dirs = dirs[:len(dirs)-1]
 	fmt.Println(dirs)
 
 	currentDir := t

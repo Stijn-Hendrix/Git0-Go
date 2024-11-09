@@ -1,6 +1,9 @@
 package main
 
-import "os"
+import (
+	"os"
+	"path/filepath"
+)
 
 func getBranchTreeBlob() *TreeBlobDir {
 	branchPath, _ := os.ReadFile("./.git0/HEAD")
@@ -8,8 +11,18 @@ func getBranchTreeBlob() *TreeBlobDir {
 	return treeBlob
 }
 
-func getBranchTreeBlobHash() string {
+func getBranchRefsPath() string {
 	branchPath, _ := os.ReadFile("./.git0/HEAD")
-	treeBlob, _ := os.ReadFile(string(branchPath))
-	return string(treeBlob)
+	return "./.git0/" + string(branchPath)
+}
+
+func getBranchLastCommitHash() string {
+	branchPath, _ := os.ReadFile("./.git0/HEAD")
+	refCommit, _ := os.ReadFile("./.git0/" + string(branchPath))
+	return string(refCommit)
+}
+
+func getBranchTreeName() string {
+	branchPath, _ := os.ReadFile("./.git0/HEAD")
+	return filepath.Base(string(branchPath))
 }

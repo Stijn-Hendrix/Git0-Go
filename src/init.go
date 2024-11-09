@@ -17,8 +17,9 @@ func initGit0() {
 	createFolder(".git0/refs")
 	createFolder(".git0/refs/heads")
 	createFile(".git0/HEAD", "refs/heads/"+MAIN_BRANCH)
+	createFile(".git0/refs/heads/"+MAIN_BRANCH, "")
 
-	SerializeTreeBlob(newTreeDir("."), ".git0/index")
+	SerializeObject(newTreeDir("."), ".git0/index")
 	//createFile(".git0/index", "")
 
 	fmt.Print("Git0 initialized.\n")

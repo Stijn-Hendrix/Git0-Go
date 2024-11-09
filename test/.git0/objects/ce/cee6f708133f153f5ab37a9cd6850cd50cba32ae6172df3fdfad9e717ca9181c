@@ -1,0 +1,46 @@
+{
+  "Message": "my commit3",
+  "Hash": "cee6f708133f153f5ab37a9cd6850cd50cba32ae6172df3fdfad9e717ca9181c",
+  "Previous": "9d80c7c326019602ee8295ce0a29bf5dbae56297b449105705b71b7a9ad5cefa",
+  "Tree": {
+    "Name": ".",
+    "TreeDirs": [
+      {
+        "Name": "src",
+        "TreeDirs": [
+          {
+            "Name": "main",
+            "TreeDirs": null,
+            "TreeFiles": [
+              {
+                "Name": "main.txt",
+                "Hash": "1981957191770403369"
+              }
+            ]
+          },
+          {
+            "Name": "math",
+            "TreeDirs": null,
+            "TreeFiles": [
+              {
+                "Name": "test.txt",
+                "Hash": "4477677635727087946"
+              },
+              {
+                "Name": "vector.txt",
+                "Hash": "5726780891968375668"
+              }
+            ]
+          }
+        ],
+        "TreeFiles": [
+          {
+            "Name": "helloWorld.txt",
+            "Hash": "13858524158368391165"
+          }
+        ]
+      }
+    ],
+    "TreeFiles": null
+  }
+}

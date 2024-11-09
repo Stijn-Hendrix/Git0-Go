@@ -1,0 +1,27 @@
+{
+  "Message": "my commit",
+  "Hash": "9f29a6dd424bc6b781f3bcc392f0a9c464a951b2a638729bdb429a79fefa3fb9",
+  "Previous": " ",
+  "Tree": {
+    "Name": ".",
+    "TreeDirs": [
+      {
+        "Name": "src",
+        "TreeDirs": [
+          {
+            "Name": "main",
+            "TreeDirs": null,
+            "TreeFiles": [
+              {
+                "Name": "main.txt",
+                "Hash": "1981957191770403369"
+              }
+            ]
+          }
+        ],
+        "TreeFiles": null
+      }
+    ],
+    "TreeFiles": null
+  }
+}
