@@ -54,7 +54,7 @@ func addDirToTree(path string, t *TreeBlobDir) {
 
 	currentDir := t
 
-	// Traverse the directory structure, creating directories as needed
+	// Traverse the directory structure
 	for _, dirName := range dirs {
 		if dirName == "" {
 			continue
@@ -73,7 +73,7 @@ func addFileToTree(path string, t *TreeBlobDir) {
 	dirs := strings.Split(filepath.Dir(path), string(os.PathSeparator))
 	currentDir := t
 
-	// Traverse the directory structure, creating directories as needed
+	// Traverse the directory structure
 	for _, dirName := range dirs {
 		if dirName == "" {
 			continue

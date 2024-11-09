@@ -6,25 +6,28 @@ import (
 )
 
 func commitGit0() {
-	blob, _ := DecompressAndDeserialize(".git0/index")
-	createFiles(blob)
+	fmt.Println("Commiting staging area...")
+
+	blob, _ := DeserializeTreeBlob(".git0/index")
+	createFiles(blob, ".")
 
 	hashStr := blob.getHash()
-	fmt.Printf("%s", hashStr)
 	createIfNotExistsFolder(".git0/objects/" + hashStr[:2])
-	CompressAndSerialize(blob, ".git0/objects/"+hashStr[:2]+"/"+hashStr)
+	SerializeTreeBlob(blob, ".git0/objects/"+hashStr[:2]+"/"+hashStr)
+
+	SerializeTreeBlob(newTreeDir("."), ".git0/index")
+
+	fmt.Printf("Commited staging area (%s)", hashStr)
 }
 
-func createFiles(t *TreeBlobDir) {
+func createFiles(t *TreeBlobDir, path string) {
 
 	for _, dir := range t.TreeDirs {
-		createFiles(dir)
+		createFiles(dir, path+"\\"+dir.Name)
 	}
-	/*
-		for _, file := range t.TreeFiles {
-			//addFile(file.Path)
-		}
-	*/
+	for _, file := range t.TreeFiles {
+		addFile(path + "\\" + file.Name)
+	}
 }
 
 func addFile(path string) {
