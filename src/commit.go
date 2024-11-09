@@ -25,11 +25,20 @@ func getCommitFromFile(hash string) *Commit {
 	return DeserializeCommit(".git0/objects/" + hash[:2] + "/" + hash)
 }
 
+func commitExists(hash string) bool {
+	return fileExists(".git0/objects/" + hash[:2] + "/" + hash)
+}
+
 func commitGit0(message string) {
 
 	// Get index tree
 	blob := DeserializeTreeBlob(".git0/index")
 	hashStr := blob.getHash()
+
+	if commitExists(hashStr) {
+		fmt.Println("Nothing to commit!")
+		return
+	}
 
 	fmt.Printf("[%s %s] commit\n", getBranchTreeName(), hashStr)
 
