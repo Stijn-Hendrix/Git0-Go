@@ -77,6 +77,26 @@ func DecompressAndDeserialize(filename string) (*TreeBlobDir, error) {
 }
 
 func SerializeObject(data interface{}, filename string) error {
+	file, err := os.Create(filename)
+	if err != nil {
+		return fmt.Errorf("failed to create file: %w", err)
+	}
+	defer file.Close()
+
+	// Create a gzip writer for compression
+	gzipWriter := gzip.NewWriter(file)
+	defer gzipWriter.Close()
+
+	// Create a gob encoder and write the TreeBlobDir to the gzip writer
+	encoder := gob.NewEncoder(gzipWriter)
+	if err := encoder.Encode(data); err != nil {
+		return fmt.Errorf("failed to encode gob: %w", err)
+	}
+
+	return nil
+}
+
+func SerializeObjectJSON(data interface{}, filename string) error {
 	// Open file for writing
 	file, err := os.Create(filename)
 	if err != nil {
@@ -94,6 +114,29 @@ func SerializeObject(data interface{}, filename string) error {
 }
 
 func DeserializeObject(data interface{}, filename string) (interface{}, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open file: %w", err)
+	}
+	defer file.Close()
+
+	// Create a gzip reader for decompression
+	gzipReader, err := gzip.NewReader(file)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create gzip reader: %w", err)
+	}
+	defer gzipReader.Close()
+
+	// Create a gob decoder and decode the data into TreeBlobDir
+	decoder := gob.NewDecoder(gzipReader)
+	if err := decoder.Decode(data); err != nil {
+		return nil, fmt.Errorf("failed to decode gob: %w", err)
+	}
+
+	return data, nil
+}
+
+func DeserializeObjectJSON(data interface{}, filename string) (interface{}, error) {
 	// Open file for reading
 	file, err := os.Open(filename)
 	if err != nil {

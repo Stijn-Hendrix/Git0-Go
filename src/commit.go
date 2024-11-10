@@ -38,7 +38,7 @@ func commitGit0(message string) {
 	// Write new commit to objects
 	newCommit := newCommit(indexBlobHash, message, getBranchLastCommitHash(), getCurrentBranchName())
 
-	if commitExists(newCommit.Hash) {
+	if commitExists(newCommit.Hash) || (len(indexBlob.TreeDirs) == 0 && len(indexBlob.TreeFiles) == 0) {
 		fmt.Println("Nothing to commit!")
 		return
 	}

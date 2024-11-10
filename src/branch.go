@@ -6,7 +6,7 @@ import (
 )
 
 func createBranch(name string) bool {
-	newBranchPath := ".git0/refs/heads/" + name
+	newBranchPath := REFS_HEADS + name
 	if fileExists(newBranchPath) {
 		return false
 	}
@@ -29,7 +29,7 @@ func branchGit0(name string) {
 }
 
 func logBranchStatus() {
-	items, _ := os.ReadDir(".git0/refs/heads/")
+	items, _ := os.ReadDir(REFS_HEADS)
 	currentBranch := getCurrentBranchName()
 	for _, item := range items {
 		if !item.IsDir() {
@@ -43,10 +43,10 @@ func logBranchStatus() {
 }
 
 func writeBranch(name string) {
-	writeToFile(".git0/HEAD", "refs/heads/"+name)
+	writeToFile(HEAD, "refs/heads/"+name)
 }
 
 func isHeadDetached() bool {
-	branchPath, _ := os.ReadFile("./.git0/HEAD")
+	branchPath := readFile(HEAD)
 	return commitExists(string(branchPath))
 }
