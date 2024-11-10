@@ -1,0 +1,41 @@
+{
+  "Name": ".",
+  "TreeDirs": [
+    {
+      "Name": "src",
+      "TreeDirs": [
+        {
+          "Name": "main",
+          "TreeDirs": null,
+          "TreeFiles": [
+            {
+              "Name": "main.txt",
+              "Hash": "10575348214505895560"
+            }
+          ]
+        },
+        {
+          "Name": "math",
+          "TreeDirs": null,
+          "TreeFiles": [
+            {
+              "Name": "test.txt",
+              "Hash": "2378182172299279786"
+            },
+            {
+              "Name": "vector.txt",
+              "Hash": "12687514930091318514"
+            }
+          ]
+        }
+      ],
+      "TreeFiles": [
+        {
+          "Name": "helloWorld.txt",
+          "Hash": "14815742587069378507"
+        }
+      ]
+    }
+  ],
+  "TreeFiles": null
+}

@@ -18,7 +18,7 @@ func logGit0() {
 		fmt.Printf("       %s\n", latestCommit.Message)
 		fmt.Println()
 
-		if latestCommit.Previous != " " {
+		if latestCommit.Previous != "" {
 			latestCommit = getCommitFromFile(latestCommit.Previous)
 		} else {
 			break

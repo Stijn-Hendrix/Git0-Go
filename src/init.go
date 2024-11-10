@@ -21,7 +21,6 @@ func initGit0() {
 	createFile(".git0/refs/heads/" + MAIN_BRANCH)
 
 	SerializeObject(newTreeDir("."), ".git0/index")
-	//createFile(".git0/index", "")
 
 	fmt.Print("Git0 initialized.\n")
 }

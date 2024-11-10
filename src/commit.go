@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"os"
 )
@@ -10,16 +12,21 @@ type Commit struct {
 	Hash     string
 	Previous string // Hash pointer
 	Branch   string
-	Tree     *TreeBlobDir
+	Tree     string // Hash pointer
 }
 
-func newCommit(t *TreeBlobDir, message string, previous string, branch string) *Commit {
+func newCommit(tree string, message string, previous string, branch string) *Commit {
 	commit := new(Commit)
-	commit.Tree = t
+	commit.Tree = tree
 	commit.Message = message
-	commit.Hash = t.getHash()
 	commit.Previous = previous
 	commit.Branch = branch
+
+	hasher := sha256.New()
+	hasher.Write([]byte(tree))
+	hasher.Write([]byte(branch))
+
+	commit.Hash = hex.EncodeToString(hasher.Sum(nil))
 	return commit
 }
 
@@ -28,6 +35,9 @@ func getCommitFromFile(hash string) *Commit {
 }
 
 func commitExists(hash string) bool {
+	if len(hash) <= 2 {
+		return false
+	}
 	return fileExists(".git0/objects/" + hash[:2] + "/" + hash)
 }
 
@@ -37,22 +47,31 @@ func commitGit0(message string) {
 	blob := DeserializeTreeBlob(".git0/index")
 	hashStr := blob.getHash()
 
-	if commitExists(hashStr) {
+	// Write new commit to objects
+	newCommit := newCommit(hashStr, message, getBranchLastCommitHash(), getCurrentBranchName())
+
+	if commitExists(newCommit.Hash) {
 		fmt.Println("Nothing to commit!")
 		return
 	}
 
-	fmt.Printf("[%s %s] commit\n", getCurrentBranchName(), hashStr)
+	if isHeadDetached() {
+		fmt.Printf("You are in 'Detached HEAD' state. If you want to create a new branch to retain commits, use \ngit0 branch new_branch_name\ngit0 checkout new_branch_name\n")
+		return
+	}
+
+	fmt.Printf("[%s %s] commit\n", getCurrentBranchName(), newCommit.Hash)
+
+	// Write commit to file
+	createIfNotExistsFolder(".git0/objects/" + newCommit.Hash[:2])
+	SerializeObject(newCommit, ".git0/objects/"+newCommit.Hash[:2]+"/"+newCommit.Hash)
+
+	// Write tree blob to file
+	createIfNotExistsFolder(".git0/objects/" + hashStr[:2])
+	SerializeObject(blob, ".git0/objects/"+hashStr[:2]+"/"+hashStr)
 
 	// Create files in index tree
 	createFiles(blob, ".")
-
-	// Create commit folder
-	createIfNotExistsFolder(".git0/objects/" + hashStr[:2])
-
-	// Write new commit to objects
-	newCommit := newCommit(blob, message, getBranchLastCommitHash(), getCurrentBranchName())
-	SerializeObject(newCommit, ".git0/objects/"+hashStr[:2]+"/"+hashStr)
 
 	// Write new latest commit to refs
 	writeToFile(getBranchRefsPath(), newCommit.Hash)

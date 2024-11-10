@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 )
 
 func createBranch(name string) bool {
@@ -43,23 +42,11 @@ func logBranchStatus() {
 	}
 }
 
-func getBranchRefsPath() string {
-	branchPath, _ := os.ReadFile("./.git0/HEAD")
-	return "./.git0/" + string(branchPath)
-}
-
-func getBranchLastCommitHash() string {
-	branchPath, _ := os.ReadFile("./.git0/HEAD")
-	refCommit, _ := os.ReadFile("./.git0/" + string(branchPath))
-	return string(refCommit)
-}
-
-func getCurrentBranchName() string {
-	branchPath, _ := os.ReadFile("./.git0/HEAD")
-	branchName := filepath.Base(string(branchPath))
-	return branchName
-}
-
 func writeBranch(name string) {
 	writeToFile(".git0/HEAD", "refs/heads/"+name)
+}
+
+func isHeadDetached() bool {
+	branchPath, _ := os.ReadFile("./.git0/HEAD")
+	return commitExists(string(branchPath))
 }
