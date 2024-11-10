@@ -16,5 +16,11 @@ func main() {
 		commitGit0(os.Args[2])
 	} else if len(os.Args) == 2 && os.Args[1] == "log" {
 		logGit0()
+	} else if len(os.Args) == 2 && os.Args[1] == "branch" {
+		branchGit0("")
+	} else if len(os.Args) == 3 && os.Args[1] == "branch" {
+		branchGit0(os.Args[2])
+	} else if len(os.Args) == 3 && os.Args[1] == "checkout" {
+		checkoutGit0(os.Args[2])
 	}
 }

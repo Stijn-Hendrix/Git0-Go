@@ -9,15 +9,17 @@ type Commit struct {
 	Message  string
 	Hash     string
 	Previous string // Hash pointer
+	Branch   string
 	Tree     *TreeBlobDir
 }
 
-func newCommit(t *TreeBlobDir, message string, previous string) *Commit {
+func newCommit(t *TreeBlobDir, message string, previous string, branch string) *Commit {
 	commit := new(Commit)
 	commit.Tree = t
 	commit.Message = message
 	commit.Hash = t.getHash()
 	commit.Previous = previous
+	commit.Branch = branch
 	return commit
 }
 
@@ -40,7 +42,7 @@ func commitGit0(message string) {
 		return
 	}
 
-	fmt.Printf("[%s %s] commit\n", getBranchTreeName(), hashStr)
+	fmt.Printf("[%s %s] commit\n", getCurrentBranchName(), hashStr)
 
 	// Create files in index tree
 	createFiles(blob, ".")
@@ -49,7 +51,7 @@ func commitGit0(message string) {
 	createIfNotExistsFolder(".git0/objects/" + hashStr[:2])
 
 	// Write new commit to objects
-	newCommit := newCommit(blob, message, getBranchLastCommitHash())
+	newCommit := newCommit(blob, message, getBranchLastCommitHash(), getCurrentBranchName())
 	SerializeObject(newCommit, ".git0/objects/"+hashStr[:2]+"/"+hashStr)
 
 	// Write new latest commit to refs

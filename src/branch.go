@@ -1,14 +1,46 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 )
 
-func getBranchTreeBlob() *TreeBlobDir {
-	branchPath, _ := os.ReadFile("./.git0/HEAD")
-	treeBlob, _ := DecompressAndDeserialize(string(branchPath))
-	return treeBlob
+func createBranch(name string) bool {
+	newBranchPath := ".git0/refs/heads/" + name
+	if fileExists(newBranchPath) {
+		return false
+	}
+	createFile(newBranchPath)
+	return true
+}
+
+func branchGit0(name string) {
+	if name == "" {
+		logBranchStatus()
+		return
+	}
+
+	if !createBranch(name) {
+		fmt.Printf("Branch with name %s already exists!\n", name)
+		return
+	}
+
+	logBranchStatus()
+}
+
+func logBranchStatus() {
+	items, _ := os.ReadDir(".git0/refs/heads/")
+	currentBranch := getCurrentBranchName()
+	for _, item := range items {
+		if !item.IsDir() {
+			if item.Name() == currentBranch {
+				fmt.Printf("* %s\n", item.Name())
+			} else {
+				fmt.Printf("  %s\n", item.Name())
+			}
+		}
+	}
 }
 
 func getBranchRefsPath() string {
@@ -22,7 +54,12 @@ func getBranchLastCommitHash() string {
 	return string(refCommit)
 }
 
-func getBranchTreeName() string {
+func getCurrentBranchName() string {
 	branchPath, _ := os.ReadFile("./.git0/HEAD")
-	return filepath.Base(string(branchPath))
+	branchName := filepath.Base(string(branchPath))
+	return branchName
+}
+
+func writeBranch(name string) {
+	writeToFile(".git0/HEAD", "refs/heads/"+name)
 }

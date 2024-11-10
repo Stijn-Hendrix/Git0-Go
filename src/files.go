@@ -41,20 +41,28 @@ func createIfNotExistsFile(path string, content string) bool {
 	}
 
 	if os.IsNotExist(err) {
-		createFile(path, content)
+		createFileAndWrite(path, content)
 		return true
 	} else {
 		return false
 	}
 }
 
-func createFile(path string, content string) {
+func createFileAndWrite(path string, content string) {
 	destination, err := os.Create(path)
 	if err != nil {
 		return
 	}
 	defer destination.Close()
 	fmt.Fprintf(destination, "%s ", content)
+}
+
+func createFile(path string) {
+	destination, err := os.Create(path)
+	if err != nil {
+		return
+	}
+	defer destination.Close()
 }
 
 func isFile(path string) bool {
