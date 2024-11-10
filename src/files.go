@@ -71,23 +71,23 @@ func isFile(path string) bool {
 }
 
 func getBranchRefsPath() string {
-	branchPath, _ := os.ReadFile("./.git0/HEAD")
-	return "./.git0/" + string(branchPath)
+	branchPath, _ := os.ReadFile(HEAD)
+	return GIT0 + string(branchPath)
 }
 
 func getBranchLastCommitHash() string {
-	branchPath, _ := os.ReadFile("./.git0/HEAD")
-	refCommit, _ := os.ReadFile("./.git0/" + string(branchPath))
+	branchPath, _ := os.ReadFile(HEAD)
+	refCommit, _ := os.ReadFile(GIT0 + string(branchPath))
 	return string(refCommit)
 }
 
 func getBranchLastCommitHashFrom(branch string) string {
-	refCommit, _ := os.ReadFile("./.git0/refs/heads/" + string(branch))
+	refCommit, _ := os.ReadFile(REFS_HEADS + string(branch))
 	return string(refCommit)
 }
 
 func getCurrentBranchName() string {
-	branchPath, _ := os.ReadFile("./.git0/HEAD")
+	branchPath := readFile(HEAD)
 	branchName := filepath.Base(string(branchPath))
 
 	if commitExists(branchName) {
@@ -98,8 +98,27 @@ func getCurrentBranchName() string {
 }
 
 func readSavedFile(hash string) string {
-	path := ".git0/objects/" + hash[:2] + "/" + hash
+	path := objectFilePath(hash)
+	return readFile(path)
+}
+
+func readFile(path string) string {
 	data, _ := os.ReadFile(path)
 	dataStr := string(data)
 	return dataStr
+}
+
+func getCommitFromFile(hash string) *Commit {
+	return DeserializeCommit(objectFilePath(hash))
+}
+
+func commitExists(hash string) bool {
+	if len(hash) <= 2 {
+		return false
+	}
+	return fileExists(objectFilePath(hash))
+}
+
+func getTreeFromFile(hash string) *TreeBlobDir {
+	return DeserializeTreeBlob(objectFilePath(hash))
 }

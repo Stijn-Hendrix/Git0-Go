@@ -8,12 +8,14 @@ import (
 )
 
 func addGit0(path string) {
+
+	// Serialize working dir
 	if path == "." {
-		SerializeObject(createDirBlob("."), ".git0/index")
+		SerializeObject(createDirBlob("."), INDEX)
 		return
 	}
 
-	head := DeserializeTreeBlob(".git0/index")
+	head := DeserializeTreeBlob(HEAD)
 
 	if path[0] != '.' {
 		path = "." + path
@@ -27,7 +29,7 @@ func addGit0(path string) {
 		addDirToTree(path, head)
 	}
 
-	SerializeObject(head, ".git0/index")
+	SerializeObject(head, HEAD)
 }
 
 func findOrCreateDir(t *TreeBlobDir, dirName string) *TreeBlobDir {

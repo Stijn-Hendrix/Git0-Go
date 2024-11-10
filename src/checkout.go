@@ -6,14 +6,13 @@ import (
 )
 
 func writeCheckoutCommit(hash string) {
-	writeToFile(".git0/HEAD", hash)
+	writeToFile(HEAD, hash)
 }
 
 func checkoutGit0(arg string) {
 
 	if arg == "" {
 		arg = getCurrentBranchName()
-		println(arg)
 	}
 
 	if commitExists(arg) {
@@ -63,8 +62,6 @@ func buildWorkingDir(t *TreeBlobDir, rootPath string) {
 	for _, file := range t.TreeFiles {
 		currentPath := rootPath + "/" + file.Name
 		createFileAndWrite(currentPath, readSavedFile(file.Hash))
-
-		//fmt.Println(currentPath)
 	}
 
 	for _, dir := range t.TreeDirs {

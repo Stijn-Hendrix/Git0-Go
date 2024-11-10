@@ -3,7 +3,14 @@ package main
 import "fmt"
 
 func logGit0() {
-	latestCommit := getCommitFromFile(getBranchLastCommitHash())
+	var latestCommit *Commit
+
+	if isHeadDetached() {
+		latestCommit = getCommitFromFile(readFile(HEAD))
+	} else {
+		latestCommit = getCommitFromFile(getBranchLastCommitHash())
+	}
+	branchName := latestCommit.Branch
 
 	const orange string = "\033[38;5;214m"
 	const white string = "\033[0m"
@@ -13,7 +20,7 @@ func logGit0() {
 		if latestCommit == nil {
 			break
 		}
-		fmt.Printf(orange+"commit %s\n", latestCommit.Hash+white)
+		fmt.Printf(orange+"commit %s (%s)\n", latestCommit.Hash+white, branchName)
 		fmt.Println()
 		fmt.Printf("       %s\n", latestCommit.Message)
 		fmt.Println()

@@ -4,7 +4,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"os"
 )
 
 type Commit struct {
@@ -30,25 +29,14 @@ func newCommit(tree string, message string, previous string, branch string) *Com
 	return commit
 }
 
-func getCommitFromFile(hash string) *Commit {
-	return DeserializeCommit(".git0/objects/" + hash[:2] + "/" + hash)
-}
-
-func commitExists(hash string) bool {
-	if len(hash) <= 2 {
-		return false
-	}
-	return fileExists(".git0/objects/" + hash[:2] + "/" + hash)
-}
-
 func commitGit0(message string) {
 
 	// Get index tree
-	blob := DeserializeTreeBlob(".git0/index")
-	hashStr := blob.getHash()
+	indexBlob := DeserializeTreeBlob(INDEX)
+	indexBlobHash := indexBlob.getHash()
 
 	// Write new commit to objects
-	newCommit := newCommit(hashStr, message, getBranchLastCommitHash(), getCurrentBranchName())
+	newCommit := newCommit(indexBlobHash, message, getBranchLastCommitHash(), getCurrentBranchName())
 
 	if commitExists(newCommit.Hash) {
 		fmt.Println("Nothing to commit!")
@@ -63,21 +51,21 @@ func commitGit0(message string) {
 	fmt.Printf("[%s %s] commit\n", getCurrentBranchName(), newCommit.Hash)
 
 	// Write commit to file
-	createIfNotExistsFolder(".git0/objects/" + newCommit.Hash[:2])
-	SerializeObject(newCommit, ".git0/objects/"+newCommit.Hash[:2]+"/"+newCommit.Hash)
+	createIfNotExistsFolder(objectDirPath(newCommit.Hash))
+	SerializeObject(newCommit, objectFilePath(newCommit.Hash))
 
 	// Write tree blob to file
-	createIfNotExistsFolder(".git0/objects/" + hashStr[:2])
-	SerializeObject(blob, ".git0/objects/"+hashStr[:2]+"/"+hashStr)
+	createIfNotExistsFolder(objectDirPath(indexBlobHash))
+	SerializeObject(indexBlob, objectFilePath(indexBlobHash))
 
-	// Create files in index tree
-	createFiles(blob, ".")
+	// Create files in objects from index tree
+	createFiles(indexBlob, ".")
 
 	// Write new latest commit to refs
 	writeToFile(getBranchRefsPath(), newCommit.Hash)
 
 	// Re-init index
-	SerializeObject(newTreeDir("."), ".git0/index")
+	SerializeObject(newTreeDir("."), INDEX)
 }
 
 func createFiles(t *TreeBlobDir, path string) {
@@ -91,13 +79,11 @@ func createFiles(t *TreeBlobDir, path string) {
 }
 
 func addFile(path string) {
-	data, _ := os.ReadFile(path)
-	dataStr := string(data)
-
+	dataStr := readFile(path)
 	hashStr := hashString(dataStr)
 
-	createIfNotExistsFolder(".git0/objects/" + hashStr[:2])
-	if createIfNotExistsFile(".git0/objects/"+hashStr[:2]+"/"+hashStr, dataStr) {
+	createIfNotExistsFolder(objectDirPath(hashStr))
+	if createIfNotExistsFile(objectFilePath(hashStr), dataStr) {
 		fmt.Printf("create node .git0/objects/%s/%s (%s)\n", hashStr[:2], hashStr, path)
 	}
 }

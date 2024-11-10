@@ -65,7 +65,3 @@ func (t *TreeBlobDir) addDir(dir *TreeBlobDir) {
 func (t *TreeBlobDir) addFile(file *TreeBlobFile) {
 	t.TreeFiles = append(t.TreeFiles, file)
 }
-
-func getTreeFromFile(hash string) *TreeBlobDir {
-	return DeserializeTreeBlob(".git0/objects/" + hash[:2] + "/" + hash)
-}

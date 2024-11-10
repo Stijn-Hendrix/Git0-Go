@@ -10,7 +10,7 @@
           "TreeFiles": [
             {
               "Name": "main.txt",
-              "Hash": "14433292391356581686"
+              "Hash": "15139396001570881238"
             }
           ]
         },
@@ -18,12 +18,16 @@
           "Name": "math",
           "TreeDirs": [
             {
-              "Name": "matrices",
+              "Name": "matrix",
               "TreeDirs": null,
               "TreeFiles": [
                 {
-                  "Name": "matrices.text",
-                  "Hash": "10051455217068437870"
+                  "Name": "k",
+                  "Hash": "2927220550007151871"
+                },
+                {
+                  "Name": "tests",
+                  "Hash": "8206060184909410514"
                 }
               ]
             }
@@ -31,11 +35,11 @@
           "TreeFiles": [
             {
               "Name": "test.txt",
-              "Hash": "16999277328757753769"
+              "Hash": "10448571262701715306"
             },
             {
               "Name": "vector.txt",
-              "Hash": "1267580715579324390"
+              "Hash": "15461398819279085189"
             }
           ]
         }
@@ -43,7 +47,7 @@
       "TreeFiles": [
         {
           "Name": "helloWorld.txt",
-          "Hash": "6601006759836057983"
+          "Hash": "6881216283529168441"
         }
       ]
     }
